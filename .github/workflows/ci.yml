@@ -30,9 +30,37 @@ jobs:
         with:
           sarif_file: reports/gitleaks.sarif
 
-  build-and-test:
+  dependency-check:
+    name: Node.js Dependency Check
     runs-on: ubuntu-latest
     needs: gitleaks
+    steps:
+      - name: Repo'yu Checkout Et
+        uses: actions/checkout@v4
+
+      - name: Node.js Kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bağımlılıkları Yükle
+        run: npm install
+
+      - name: npm audit SARIF'a çevir ve kaydet
+        run: |
+          mkdir -p reports
+          npx npm-audit-to-sarif > reports/dependency-check.sarif
+
+      - name: Dependency Check Raporunu Security tabına yükle
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: reports/dependency-check.sarif
+
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    needs: [gitleaks, dependency-check]
     steps:
       - name: Repo'yu Checkout Et
         uses: actions/checkout@v4
