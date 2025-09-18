@@ -1,8 +1,8 @@
 let todos = [];
 
 // ❌ Örnek gizli bilgi (dummy API key gibi)
-const API_SECRET_KEY = "mysecretapikey12345";
-const PASSWORD = "sifrem"
+//const API_SECRET_KEY = "mysecretapikey12345";
+//const PASSWORD = "sifrem"
 function addTodo(task) {
   todos.push(task);
   return todos;
