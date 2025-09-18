@@ -1,0 +1,7 @@
+title = "Custom Gitleaks Config"
+
+[[rules]]
+id = "forbidden-words"
+description = "Belirli yasaklı kelimeler"
+regex = '''(?i)(sifrem|superpassword)'''
+secretGroup = 1
