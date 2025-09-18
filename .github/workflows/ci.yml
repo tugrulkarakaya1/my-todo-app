@@ -46,10 +46,16 @@ jobs:
       - name: Bağımlılıkları Yükle
         run: npm install
 
-      - name: npm audit SARIF'a çevir ve kaydet
+      - name: npm-audit-to-sarif kurulumu
+        run: npm install --save-dev npm-audit-to-sarif
+
+      - name: npm audit JSON olarak al
         run: |
           mkdir -p reports
-          npx npm-audit-to-sarif > reports/dependency-check.sarif
+          npm audit --json > reports/dependency-check.json
+
+      - name: JSON → SARIF dönüştür
+        run: npx npm-audit-to-sarif reports/dependency-check.json > reports/dependency-check.sarif
 
       - name: Dependency Check Raporunu Security tabına yükle
         if: always()
