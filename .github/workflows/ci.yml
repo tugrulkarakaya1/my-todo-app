@@ -14,10 +14,16 @@ jobs:
       - name: Repo'yu Checkout Et
         uses: actions/checkout@v4
 
-      - name: Gitleaks ile Secret Taraması
-        uses: gitleaks/gitleaks-action@v2
+      - name: Gitleaks ile Secret Taraması (SARIF çıktısı)
+        run: |
+          mkdir -p reports
+          docker run --rm -v ${{ github.workspace }}:/path zricethezav/gitleaks:latest \
+            detect --source /path --report-format sarif --report-path /path/reports/gitleaks.sarif
+
+      - name: Raporu Security tabına yükle
+        uses: github/codeql-action/upload-sarif@v3
         with:
-          args: detect --source . --no-banner --redact
+          sarif_file: reports/gitleaks.sarif
 
   build-and-test:
     runs-on: ubuntu-latest
