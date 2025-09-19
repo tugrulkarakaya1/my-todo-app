@@ -51,6 +51,21 @@ jobs:
           mkdir -p reports
           npm audit --json > reports/dependency-check.json
 
+      - name: Kritik açık kontrolü
+        run: |
+          CRITICAL=$(jq '[.vulnerabilities[] | select(.severity=="critical")] | length' reports/dependency-check.json)
+          HIGH=$(jq '[.vulnerabilities[] | select(.severity=="high")] | length' reports/dependency-check.json)
+
+          echo "Critical bulunan: $CRITICAL"
+          echo "High bulunan: $HIGH"
+
+          if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+            echo "❌ Kritik/High güvenlik açığı bulundu. Pipeline sonlandırılıyor."
+            exit 1
+          else
+            echo "✅ Kritik/High güvenlik açığı bulunamadı."
+          fi
+
       - name: Raporu Artifact olarak sakla
         if: always()
         uses: actions/upload-artifact@v4
