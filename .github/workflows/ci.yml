@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write    
 
 jobs:
   gitleaks:
@@ -24,11 +23,12 @@ jobs:
           docker run --rm -v ${{ github.workspace }}:/path zricethezav/gitleaks:latest \
             detect --source /path --report-format sarif --report-path /path/reports/gitleaks.sarif
 
-      - name: Raporu Security tabına yükle
+      - name: Raporu Artifact olarak sakla
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: reports/gitleaks.sarif
+          name: gitleaks-report
+          path: reports/gitleaks.sarif
 
   dependency-check:
     name: Node.js Dependency Check
@@ -46,22 +46,17 @@ jobs:
       - name: Bağımlılıkları Yükle
         run: npm install
 
-      - name: npm-audit-to-sarif kurulumu
-        run: npm install --save-dev npm-audit-to-sarif
-
-      - name: npm audit JSON olarak al
+      - name: Dependency Check (npm audit JSON raporu)
         run: |
           mkdir -p reports
           npm audit --json > reports/dependency-check.json
 
-      - name: JSON → SARIF dönüştür
-        run: npx npm-audit-to-sarif reports/dependency-check.json > reports/dependency-check.sarif
-
-      - name: Dependency Check Raporunu Security tabına yükle
+      - name: Raporu Artifact olarak sakla
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: reports/dependency-check.sarif
+          name: dependency-check-report
+          path: reports/dependency-check.json
 
   build-and-test:
     name: Build and Test
